@@ -3,12 +3,33 @@ import { addToDb, deleteShoppingCart, getShoppingCart } from '../../utilities/fa
 import Cart from '../Cart/Cart';
 import Product from '../Product/Product';
 import './Shop.css';
-import { Link } from 'react-router-dom';
+import { Link, useLoaderData } from 'react-router-dom';
 
 const Shop = () => {
+    
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState([])
+      const {count} = useLoaderData();
+      const [itemsPerPage,setItemsPerPage] = useState(10)
+     
+      const numberOfPages = Math.ceil(count/itemsPerPage);
+    //   const pages=[];
+    //   for(let i=0;i<numberOfPages;i++){
+    //     pages.push(i);
+    //   }
+    // another system
+    const pages=[...Array(numberOfPages).keys()]
+  
+      console.log(pages);
 
+
+    /**
+     * DONE 1: get the total number of products
+     * TODO 2: number of items per page dynamic
+     * 
+     * 
+     */
+      console.log(count);
     useEffect(() => {
         fetch('http://localhost:5000/products')
             .then(res => res.json())
@@ -60,7 +81,11 @@ const Shop = () => {
         setCart([]);
         deleteShoppingCart();
     }
-
+    const handleItemsPerPage=e=>{
+        console.log(e.target.value);
+        const val = parseInt(e.target.value);
+        setItemsPerPage(val);
+    }
     return (
         <div className='shop-container'>
             <div className="products-container">
@@ -81,6 +106,17 @@ const Shop = () => {
                         <button className='btn-proceed'>Review Order</button>
                     </Link>
                 </Cart>
+            </div>
+            <div className='pagination'>
+                 {
+                  pages.map(page=><button key={page}>{page}</button>)  
+                 }
+                 <select value={itemsPerPage} onChange={handleItemsPerPage}>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+                 </select>
             </div>
         </div>
     );
